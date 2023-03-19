@@ -5,7 +5,7 @@ from torchvision.transforms import Compose
 from torch.utils.data import DataLoader
 from eoe.training.ad_trainer import ADTrainer
 from eoe.datasets import str_labels
-
+from loguru import logger as glogger
 
 def raise_error(t: str):
     raise ValueError(f'transform placeholder {t} is unknown.')
@@ -46,8 +46,10 @@ class ADClipTrainer(ADTrainer):
         super(ADClipTrainer, self).__init__(None, train_transform, transform, *args, **kwargs)
         self.model = model.to(self.device)
         self.anom_tkn_ptn = anom_tkn_ptn
+        glogger.info("anom_tkn_ptn {}", anom_tkn_ptn)
 
     def prepare_metric(self, cstr: str, loader: DataLoader, model: torch.nn.Module, seed: int, **kwargs) -> torch.Tensor:
+        # 对于同一个分类，center是一样的
         if self.ad_mode == 'one_vs_rest':
             raw_texts = [f"a photo of a {cstr}", self.anom_tkn_ptn.format(cstr)]
         elif self.ad_mode == 'leave_one_out':
@@ -55,12 +57,13 @@ class ADClipTrainer(ADTrainer):
         else:
             raise NotImplementedError()
         self.raw_texts = raw_texts
-
+        glogger.info("raw texts {}", raw_texts)
         text_inputs = torch.cat([official_clip.tokenize(tk) for tk in raw_texts]).to(self.device)
         with torch.no_grad():
             text_features = model.encode_text(text_inputs)
         text_features /= text_features.norm(dim=-1, keepdim=True)
-
+        glogger.info("prepare_metric cstr {}, text_features shape {}", cstr, text_features.shape)
+        glogger.info("cstr {} text_features data {}", cstr, text_features.cpu().numpy().tolist())
         return text_features
 
     def compute_anomaly_score(self, image_features: torch.Tensor, center: torch.Tensor,

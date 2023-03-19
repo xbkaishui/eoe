@@ -16,7 +16,7 @@ from eoe.datasets.bases import TorchvisionDataset, CombinedDataset
 from eoe.datasets.imagenet import ADImageNet21k
 from eoe.models.clip_official.clip.model import CLIP
 from eoe.utils.logger import Logger, ROC, PRC
-
+from loguru import logger as glogger
 
 class NanGradientsError(RuntimeError):
     pass
@@ -213,7 +213,7 @@ class ADTrainer(ABC):
 
         # Loop over all classes, considering in each step the current class nominal
         for c, cstr in ((c, cstr) for c, cstr in enumerate(classes) if c in run_classes):
-
+            glogger.info("start train class {}", cstr)
             for seed in range(run_seeds):
                 self.logger.print(f'------ start training cls {c} "{cstr}" ------')
                 if load is not None and len(load) > c and len(load[c]) > seed:
@@ -245,8 +245,8 @@ class ADTrainer(ABC):
                 ) if self.ds is None else self.ds
                 ADImageNet21k.img_cache_size = orig_cache_size
 
-                # train need to train more data step? 
-                for i in range(2):
+                # train need to train more data step, just for exception case... ? 
+                for i in range(3):
                     try:
                         model = copy_model()
                         model, roc = self.train_cls(model, ds, c, cstr, seed, cur_load)
@@ -486,7 +486,9 @@ class ADTrainer(ABC):
                 imgs = ds.gpu_test_conditional_transform(imgs, lbls)
                 imgs = ds.gpu_test_transform(imgs)
             with torch.no_grad():
+                glogger.info("eval cls image shape {}", imgs.shape)
                 image_features = model(imgs)
+                glogger.info("eval cls image feature shape {}", image_features.shape)
             anomaly_scores = self.compute_anomaly_score(image_features, center, inputs=imgs)
             ep_labels.append(lbls.cpu())
             ep_ascores.append(anomaly_scores.cpu())

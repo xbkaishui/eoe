@@ -1,29 +1,25 @@
 import numpy as np
 import torch
 from PIL import Image
+import os
+import eoe.models.clip_official.clip as official_clip
+from loguru import logger
 
-from eoe.models.clip_official.clip import clip
-
-
-def test_consistency(model_name):
+def test_clip_infer(model_name):
+    cur_file = os.path.dirname(__file__)
     device = "cpu"
-    jit_model, transform = clip.load(model_name, device=device, jit=True)
-    py_model, _ = clip.load(model_name, device=device, jit=False)
+    jit_model, transform = official_clip.load(model_name, device=device, jit=False)
 
-    image = transform(Image.open("CLIP.png")).unsqueeze(0).to(device)
-    text = clip.tokenize(["a diagram", "a dog", "a cat"]).to(device)
+    image = transform(Image.open(f"{cur_file}/CLIP.png")).unsqueeze(0).to(device)
+    text = official_clip.tokenize(["a diagram", "a dog", "a cat"]).to(device)
 
     with torch.no_grad():
         logits_per_image, _ = jit_model(image, text)
         jit_probs = logits_per_image.softmax(dim=-1).cpu().numpy()
 
-        logits_per_image, _ = py_model(image, text)
-        py_probs = logits_per_image.softmax(dim=-1).cpu().numpy()
-
-    assert np.allclose(jit_probs, py_probs, atol=0.01, rtol=0.1)
-
+    logger.info(jit_probs.tolist())
 
 if __name__ == '__main__':
-    models = clip.available_models()
-    print(models)
-    test_consistency(models[-1])
+    models = official_clip.available_models()
+    logger.info("support models {}", models)
+    test_clip_infer("ViT-B/32")

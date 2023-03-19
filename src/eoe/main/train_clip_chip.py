@@ -12,7 +12,7 @@ if __name__ == '__main__':
             # oe_dataset=None,
             oe_dataset='chip',
             # todo change for test, default is 80
-            epochs=20,
+            epochs=2,
             learning_rate=2e-5,
             weight_decay=1e-3,
             milestones=[50, 60, 70, 75],
@@ -20,7 +20,7 @@ if __name__ == '__main__':
             devices=[0],
             classes=None,
             # todo change for test default is 10
-            iterations=3,
+            iterations=2,
         )
     args = default_argsparse(
         lambda s: f"{s} This specific script comes with a default configuration for training CLIP with MNIST.", modify_parser

@@ -61,7 +61,7 @@ class CHIP(torchvision.datasets.vision.VisionDataset):
         standard one.
         """
         super(CHIP, self).__init__(*args, **kwargs)
-        glogger.info("root dir {}", self.root)
+        # glogger.info("root dir {}", self.root)
         self.conditional_transform = conditional_transform
         self.pre_transform, self.post_transform = None, None
         if self.transform is not None and self.conditional_transform is not None:
