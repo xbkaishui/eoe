@@ -16,10 +16,11 @@ from eoe.datasets.mvtec import ADMvTec
 from eoe.datasets.tinyimages import ADTinyImages
 from eoe.utils.logger import Logger
 from eoe.utils.transformations import TRANSFORMS, get_transform, ConditionalCompose
+from eoe.datasets.chip import ADCHIP
 
 DS_CHOICES = (  # list of implemented datasets (most can also be used as OE)
     'cifar10', 'imagenet', 'cifar100', 'imagenet21k', 'tinyimages', 'mvtec', 'imagenetoe', 'fmnist', 'cub', 'dtd',
-    'imagenet21ksubset', 'mnist', 'emnist'
+    'imagenet21ksubset', 'mnist', 'emnist', 'chip'
 )
 TRAIN_NOMINAL_ID = 0
 TRAIN_OE_ID = 1
@@ -214,6 +215,8 @@ def load_dataset(dataset_name: str, data_path: str, normal_classes: List[int], n
             dataset = ADDTD(*args)
         elif name == 'imagenet21ksubset':
             dataset = ADImageNet21kSubSet(*args)
+        elif name == 'chip':
+            dataset = ADCHIP(*args)
         else:
             raise NotImplementedError(f'Dataset {name} is unknown (not in {DS_CHOICES})')
 
@@ -245,7 +248,8 @@ def no_classes(dataset_name: str) -> int:
         'dtd': 47,
         'imagenet21ksubset': 21811,
         'mnist': 10,
-        'emnist': 26
+        'emnist': 26,
+        "chip": 2,
     }[dataset_name]
 
 
@@ -337,5 +341,7 @@ def str_labels(dataset_name) -> List[str]:
         'mnist': [
           "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"
         ],
-        'emnist': list(range(26))  # ?
+        'emnist': list(range(26)),
+        # add chip dataset
+        'chip': ["good", "bad"],
     }[dataset_name]
