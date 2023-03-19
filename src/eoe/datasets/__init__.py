@@ -111,7 +111,7 @@ def get_raw_shape(train_transform: Compose, dataset_name: str) -> Tuple[int, int
         size = {  # default
             'cifar10': 32, 'mvtec': 256, 'imagenet': 256, 'mnist': 28, 'emnist': 28,
             'cifar100': 32, 'imagenet21k': 256, 'tinyimages': 32, 'confetti': 256, 'color': 32,
-            'fmnist': 28, 'cub': 256, 'dtd': 256, 'imagenet21ksubset': 256,
+            'fmnist': 28, 'cub': 256, 'dtd': 256, 'imagenet21ksubset': 256, 'chip': 256,
         }[dataset_name]
         return 3, size, size
 

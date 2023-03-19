@@ -12,7 +12,7 @@ if __name__ == '__main__':
             # oe_dataset=None,
             oe_dataset='chip',
             # todo change for test, default is 80
-            epochs=5,
+            epochs=20,
             learning_rate=2e-5,
             weight_decay=1e-3,
             milestones=[50, 60, 70, 75],
@@ -20,13 +20,14 @@ if __name__ == '__main__':
             devices=[0],
             classes=None,
             # todo change for test default is 10
-            iterations=1,
+            iterations=3,
         )
     args = default_argsparse(
         lambda s: f"{s} This specific script comes with a default configuration for training CLIP with MNIST.", modify_parser
     )
     args.comment = args.comment.format(obj=args.objective, admode=args.ad_mode, epochs=args.epochs)
     train_transform = transforms.Compose([
+        transforms.Resize(256),
         'clip_pil_preprocessing',
         transforms.ToTensor(),
         'clip_tensor_preprocessing'

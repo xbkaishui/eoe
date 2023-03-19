@@ -13,7 +13,7 @@ import os
 from pathlib import Path
 from typing import Any, Callable, Optional, Tuple
 import torchvision
-from loguru import logger
+from loguru import logger as glogger
 
 
 class ADCHIP(TorchvisionDataset):
@@ -26,21 +26,22 @@ class ADCHIP(TorchvisionDataset):
             root, normal_classes, nominal_label, train_transform, test_transform, 10, raw_shape, logger, limit_samples,
             train_conditional_transform, test_conditional_transform
         )
+        glogger.info("self root {}, normal_classes {}, nominal_label {}", root, normal_classes, nominal_label)
 
         self._train_set = CHIP(
-            self.root, train=True, download=True, transform=self.train_transform,
+            self.root, transform=self.train_transform,
             target_transform=self.target_transform, conditional_transform=self.train_conditional_transform
         )
         self._train_set = self.create_subset(self._train_set, self._train_set.targets)
         self._test_set = CHIP(
-            root=self.root, train=False, download=True, transform=self.test_transform,
+            root=self.root, transform=self.test_transform,
             target_transform=self.target_transform, conditional_transform=self.test_conditional_transform
         )
         self._test_set = Subset(self._test_set, list(range(len(self._test_set))))  # create improper subset with all indices
 
     def _get_raw_train_set(self):
         train_set = CHIP(
-            self.root, train=True, download=True,
+            self.root,
             transform=transforms.Compose([transforms.Resize((self.raw_shape[-1])), transforms.ToTensor(), ]),
             target_transform=self.target_transform
         )
@@ -60,7 +61,7 @@ class CHIP(torchvision.datasets.vision.VisionDataset):
         standard one.
         """
         super(CHIP, self).__init__(*args, **kwargs)
-        logger.info("root dir {}", self.root)
+        glogger.info("root dir {}", self.root)
         self.conditional_transform = conditional_transform
         self.pre_transform, self.post_transform = None, None
         if self.transform is not None and self.conditional_transform is not None:
@@ -69,24 +70,30 @@ class CHIP(torchvision.datasets.vision.VisionDataset):
             self.pre_transform = transforms.Compose(self.transform.transforms[:totensor_pos])
             self.post_transform = transforms.Compose(self.transform.transforms[totensor_pos:])
 
-        images_dir = Path(self.root) / 'images'
-        labels_dir = Path(self.root) / 'labels'
+        images_dir = Path(self.root) / 'chip' / 'images'
+        labels_dir = Path(self.root) / 'chip' / 'labels'
         self.images = [n for n in images_dir.iterdir()]
-        self.labels = []
+        # self.labels = []
+        self.targets = []
         for image in self.images:
             base, _ = os.path.splitext(os.path.basename(image))
             label = labels_dir / f'{base}.txt'
-            self.labels.append(label if label.exists() else None)
+            # self.labels.append(label if label.exists() else None)
+            with open(label, 'r') as f:
+                labels = [x.split() for x in f.read().strip().splitlines()]
+                # one line one label
+                target = int(labels[0][0])
+                self.targets.append(target)
+
+    def __len__(self) -> int:
+        return len(self.targets)
 
     def __getitem__(self, index) -> Tuple[torch.Tensor, int, int]:
         img = Image.open(self.images[index]).convert('RGB')
         img = np.asarray(img)
         # img, target = self.data[index], self.targets[index]
-        label_file = self.labels[index]
-        with open(label_file, 'r') as f:
-            labels = [x.split() for x in f.read().strip().splitlines()]
-            # one line one label
-            target = int(labels[0][0])
+        target = self.targets[index]
+        
         if self.transform is None or isinstance(self.transform, transforms.Compose) and len(self.transform.transforms) == 0:
             img = torch.from_numpy(img).float().div(255).permute(2, 0, 1)
         else:
