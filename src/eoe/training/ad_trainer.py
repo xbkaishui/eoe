@@ -245,8 +245,8 @@ class ADTrainer(ABC):
                 ) if self.ds is None else self.ds
                 ADImageNet21k.img_cache_size = orig_cache_size
 
-                # train
-                for i in range(5):
+                # train need to train more data step? 
+                for i in range(2):
                     try:
                         model = copy_model()
                         model, roc = self.train_cls(model, ds, c, cstr, seed, cur_load)
