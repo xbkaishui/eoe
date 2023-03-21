@@ -19,6 +19,14 @@
             "program": "src/eoe/models/tests/test_clip.py",
             "console": "integratedTerminal",
             "justMyCode": true
+        },
+        {
+            "name": "test_infer_clip",
+            "type": "python",
+            "request": "launch",
+            "program": "src/eoe/infer/infer_clip.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
         }
     ]
 }
