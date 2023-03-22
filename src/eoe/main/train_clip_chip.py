@@ -12,7 +12,7 @@ if __name__ == '__main__':
             # oe_dataset=None,
             oe_dataset='chip',
             # todo change for test, default is 80
-            epochs=2,
+            epochs=20,
             learning_rate=2e-5,
             weight_decay=1e-3,
             milestones=[50, 60, 70, 75],
