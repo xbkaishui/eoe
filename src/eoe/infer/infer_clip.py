@@ -23,4 +23,9 @@ if __name__ == '__main__':
     img_path = "/opt/eoe/data/datasets/chip/images/GOOD3.jpg"
     img_path = "/opt/eoe/data/datasets/chip/images/NG3.jpg"
     model_file = "/tmp/good.pt"
+    # good
+    img_path = "/opt/eoe/data/datasets/chip/images/0004-B-3.jpg"
+    # bad
+    # img_path = "/opt/eoe/data/datasets/chip/images/0034-T-3.jpg"
+    model_file = "/opt/eoe/data/models/03_26_good.pt"
     infer(img_path, model_file)

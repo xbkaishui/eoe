@@ -1,5 +1,5 @@
 import torchvision.transforms as transforms
-
+import torch 
 from eoe.main import default_argsparse, create_trainer, load_setup
 
 if __name__ == '__main__':
@@ -12,11 +12,11 @@ if __name__ == '__main__':
             # oe_dataset=None,
             oe_dataset='chip',
             # todo change for test, default is 80
-            epochs=20,
+            epochs=40,
             learning_rate=2e-5,
             weight_decay=1e-3,
             milestones=[50, 60, 70, 75],
-            batch_size=20,
+            batch_size=40,
             devices=[0],
             classes=None,
             # todo change for test default is 10
@@ -27,9 +27,12 @@ if __name__ == '__main__':
     )
     args.comment = args.comment.format(obj=args.objective, admode=args.ad_mode, epochs=args.epochs)
     train_transform = transforms.Compose([
-        transforms.Resize(256),
+        transforms.Resize((23, 23)),
+        # transforms.RandomCrop(12, padding=3),
+        transforms.RandomHorizontalFlip(),
         'clip_pil_preprocessing',
         transforms.ToTensor(),
+        # transforms.Lambda(lambda x: x + 0.001 * torch.randn_like(x)),
         'clip_tensor_preprocessing'
     ])
     val_transform = transforms.Compose([])

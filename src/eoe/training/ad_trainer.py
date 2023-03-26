@@ -246,7 +246,7 @@ class ADTrainer(ABC):
                 ADImageNet21k.img_cache_size = orig_cache_size
 
                 # train need to train more data step, just for exception case... ? 
-                for i in range(3):
+                for i in range(5):
                     try:
                         model = copy_model()
                         model, roc = self.train_cls(model, ds, c, cstr, seed, cur_load)

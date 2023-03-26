@@ -133,3 +133,4 @@ dmypy.json
 .idea
 data/datasets
 data/results
+data/models

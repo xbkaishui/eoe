@@ -57,13 +57,13 @@ class ADClipTrainer(ADTrainer):
         else:
             raise NotImplementedError()
         self.raw_texts = raw_texts
-        glogger.info("raw texts {}", raw_texts)
+        # glogger.info("raw texts {}", raw_texts)
         text_inputs = torch.cat([official_clip.tokenize(tk) for tk in raw_texts]).to(self.device)
         with torch.no_grad():
             text_features = model.encode_text(text_inputs)
         text_features /= text_features.norm(dim=-1, keepdim=True)
-        glogger.info("prepare_metric cstr {}, text_features shape {}", cstr, text_features.shape)
-        glogger.info("cstr {} text_features data {}", cstr, text_features.cpu().numpy().tolist())
+        # glogger.info("prepare_metric cstr {}, text_features shape {}", cstr, text_features.shape)
+        # glogger.info("cstr {} text_features data {}", cstr, text_features.cpu().numpy().tolist())
         return text_features
 
     def compute_anomaly_score(self, image_features: torch.Tensor, center: torch.Tensor,
