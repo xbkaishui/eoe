@@ -19,9 +19,20 @@ def infer(img_path, model_file):
     images = []
     if pt.isdir(img_path):
         images = [pt.join(img_path, f) for f in os.listdir(img_path)]
-        ...
     else:
         images.append(img_path)
+    # read labels
+    label_file_path = os.path.join(img_path, '..', 'labels')
+    glogger.info("label_file_path {}", label_file_path)
+    lable_dict = {}
+    if os.path.exists(label_file_path):
+        label_files = [pt.join(label_file_path, f) for f in os.listdir(label_file_path)]
+        for label_file in label_files:
+            with open(label_file, 'r') as f:
+                key = Path(label_file).stem
+                label = f.readline().rstrip()
+                lable_dict[key] = label
+    glogger.info("lable_dict {}", lable_dict)
     glogger.info("images {}", images)
     # return
     # for each
@@ -37,14 +48,19 @@ def infer(img_path, model_file):
         with torch.no_grad():
             logits_per_image, _ = model(image, text)
             jit_probs = logits_per_image.softmax(dim=-1).cpu().numpy()[0]
-        # best_idx = np.argmax(jit_probs)
-        if jit_probs.tolist()[1] > .62:
-            best_idx = 1
-        else:
-            best_idx = 0
+        best_idx = np.argmax(jit_probs)
+        
+        if img_name in lable_dict:
+            raw_label_id = int(lable_dict[img_name])
+        # if jit_probs.tolist()[1] > .62:
+        #     best_idx = 1
+        # else:
+        #     best_idx = 0
         # glogger.info(jit_probs.tolist())
         probs = {"good": jit_probs.tolist()[0], "bad": jit_probs.tolist()[1]}
-        glogger.info("image {}, predict probs {} predict label {}", img_name, probs, labels[best_idx])
+        if raw_label_id != best_idx:
+            glogger.info("bad infer image {}, predict probs {} predict label {} raw_label {}", img_name, probs, labels[best_idx], raw_label_id)
+        # glogger.info("image {}, predict probs {} predict label {}", img_name, probs, labels[best_idx])
 
 if __name__ == '__main__':
     img_path = "/opt/eoe/data/datasets/chip/images/GOOD3.jpg"
@@ -59,4 +75,6 @@ if __name__ == '__main__':
     # model_file = "/opt/eoe/data/models/03_26_bad.pt"
     
     model_file = "/opt/eoe/data/models/panzi_good.pt"
+    model_file = "/opt/eoe/data/models/16c_0405_1_good.pt"
+    img_path = "/opt/eoe/data/datasets/chip/test/images"
     infer(img_path, model_file)
