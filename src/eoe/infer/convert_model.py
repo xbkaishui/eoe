@@ -26,4 +26,10 @@ if __name__ == '__main__':
     
     model_file = "/opt/eoe/data/results/log_20230328205456_clip_chip_one_vs_rest_E20/snapshots/snapshot_cls0_it0.pt"
     dst_file = "/opt/eoe/data/models/panzi_good.pt"
+    
+    model_file = "/opt/eoe/data/results/log_20230331232153_clip_chip_one_vs_rest_E20/snapshots/snapshot_cls0_it1.pt"
+    dst_file = "/opt/eoe/data/models/f4_good.pt"
+    
+    model_file = "/opt/eoe/data/results/log_20230331232153_clip_chip_one_vs_rest_E20/snapshots/snapshot_cls1_it1.pt"
+    dst_file = "/opt/eoe/data/models/f4_bad.pt"
     convert_snapshot_to_model(model_file, dst_file)

@@ -28,4 +28,8 @@ if __name__ == '__main__':
     # bad
     # img_path = "/opt/eoe/data/datasets/chip/images/0034-T-3.jpg"
     model_file = "/opt/eoe/data/models/03_26_good.pt"
+    model_file = "/opt/eoe/data/models/f4_bad.pt"
+    # model_file = "/opt/eoe/data/models/f4_good.pt"
+    img_path = "/opt/eoe/data/datasets/chip/images/bottom-0004-B-7.jpg"
+    # img_path = "/opt/eoe/data/datasets/chip/images/NG-bottom-0004-B-6.jpg"
     infer(img_path, model_file)

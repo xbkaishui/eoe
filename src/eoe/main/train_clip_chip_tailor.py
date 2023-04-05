@@ -12,11 +12,11 @@ if __name__ == '__main__':
             # oe_dataset=None,
             oe_dataset='chip',
             # todo change for test, default is 80
-            epochs=40,
+            epochs=20,
             learning_rate=2e-5,
             weight_decay=1e-3,
             milestones=[50, 60, 70, 75],
-            batch_size=40,
+            batch_size=128,
             devices=[0],
             classes=None,
             # todo change for test default is 10
@@ -27,8 +27,9 @@ if __name__ == '__main__':
     )
     args.comment = args.comment.format(obj=args.objective, admode=args.ad_mode, epochs=args.epochs)
     train_transform = transforms.Compose([
-        transforms.Resize((23, 23)),
-        # transforms.RandomCrop(12, padding=3),
+        transforms.Grayscale(1),
+        transforms.Resize((32, 32)),
+        transforms.RandomCrop(32, padding=3),
         transforms.RandomHorizontalFlip(),
         'clip_pil_preprocessing',
         transforms.ToTensor(),

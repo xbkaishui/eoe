@@ -27,14 +27,21 @@ class ADCHIP(TorchvisionDataset):
             train_conditional_transform, test_conditional_transform
         )
         glogger.info("self root {}, normal_classes {}, nominal_label {}", root, normal_classes, nominal_label)
-
+        train_root = os.path.join(root, "chip", "train")
+        test_root = os.path.join(root, "chip", "test")
+        if not os.path.exists(train_root):
+            # fallback to old path
+            train_root = os.path.join(root, "chip")
+        if not os.path.exists(test_root):
+            test_root = train_root
+        glogger.info("train root {} test_root {}", train_root, test_root)
         self._train_set = CHIP(
-            self.root, transform=self.train_transform,
+            train_root, transform=self.train_transform,
             target_transform=self.target_transform, conditional_transform=self.train_conditional_transform
         )
         self._train_set = self.create_subset(self._train_set, self._train_set.targets)
         self._test_set = CHIP(
-            root=self.root, transform=self.test_transform,
+            root=test_root, transform=self.test_transform,
             target_transform=self.target_transform, conditional_transform=self.test_conditional_transform
         )
         self._test_set = Subset(self._test_set, list(range(len(self._test_set))))  # create improper subset with all indices
@@ -70,8 +77,8 @@ class CHIP(torchvision.datasets.vision.VisionDataset):
             self.pre_transform = transforms.Compose(self.transform.transforms[:totensor_pos])
             self.post_transform = transforms.Compose(self.transform.transforms[totensor_pos:])
 
-        images_dir = Path(self.root) / 'chip' / 'images'
-        labels_dir = Path(self.root) / 'chip' / 'labels'
+        images_dir = Path(self.root) / 'images'
+        labels_dir = Path(self.root) / 'labels'
         self.images = [n for n in images_dir.iterdir()]
         # self.labels = []
         self.targets = []
