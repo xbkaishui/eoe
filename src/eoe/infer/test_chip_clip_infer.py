@@ -77,4 +77,8 @@ if __name__ == '__main__':
     model_file = "/opt/eoe/data/models/panzi_good.pt"
     model_file = "/opt/eoe/data/models/16c_0405_1_good.pt"
     img_path = "/opt/eoe/data/datasets/chip/test/images"
+    
+    model_file = "/opt/eoe/data/models/0409_good.pt"
+    # model_file = "/opt/eoe/data/models/0409_good_2.pt"
+    img_path = "/opt/eoe/data/datasets/chip/test/images"
     infer(img_path, model_file)
