@@ -2,9 +2,13 @@ import numpy as np
 import torch
 from PIL import Image
 from loguru import logger as glogger
+import os
+from pathlib import Path
 
+# TODO delete later, not used anymore
 
 def convert_snapshot_to_model(model_file, dst):
+    os.makedirs(str(Path(dst).parent), exist_ok=True)
     load_model = torch.load(model_file)
     model = load_model['net']
     torch.save(model, dst_file)
@@ -37,6 +41,10 @@ if __name__ == '__main__':
     
     model_file = "/opt/eoe/data/results/log_20230409163415_clip_chip_one_vs_rest_E100/snapshots/snapshot_cls0_it1.pt"
     dst_file = "/opt/eoe/data/models/0409_good.pt"
+    
+    model_file = "/opt/product/eoe/data/results/log_20230623115541_clip_chip_one_vs_rest_E50/snapshots/snapshot_cls0_it1.pt"
+    dst_file = "/opt/product/eoe/data/models/0624_good.pt"
+    
     
     # model_file = "/opt/eoe/data/results/log_20230409141635_clip_chip_one_vs_rest_E200/snapshots/snapshot_cls0_it4.pt"
     # dst_file = "/opt/eoe/data/models/0409_good_2.pt"

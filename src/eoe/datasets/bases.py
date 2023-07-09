@@ -218,6 +218,7 @@ class TorchvisionDataset(BaseADDataset):
         @return: A tuple (train_loader, test_loader).
         """
         # classes = None means all classes
+        print(f"train set len {len(self.train_set)}")
         train_loader = DataLoader(
             dataset=self.train_set, batch_size=batch_size, num_workers=num_workers, pin_memory=False,
             persistent_workers=persistent, prefetch_factor=prefetch_factor,

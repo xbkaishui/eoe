@@ -80,6 +80,7 @@ class CHIP(torchvision.datasets.vision.VisionDataset):
         images_dir = Path(self.root) / 'images'
         labels_dir = Path(self.root) / 'labels'
         self.images = [n for n in images_dir.iterdir()]
+        #print(f"images {self.images}")
         # self.labels = []
         self.targets = []
         for image in self.images:
@@ -91,6 +92,7 @@ class CHIP(torchvision.datasets.vision.VisionDataset):
                 # one line one label
                 target = int(labels[0][0])
                 self.targets.append(target)
+        print(f"targets {self.targets}")
 
     def __len__(self) -> int:
         return len(self.targets)

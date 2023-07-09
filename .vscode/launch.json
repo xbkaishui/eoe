@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "src/eoe/main/train_clip_chip.py",
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": false
         },
         {
             "name": "test_clip",
@@ -18,7 +18,7 @@
             "request": "launch",
             "program": "src/eoe/models/tests/test_clip.py",
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": false
         },
         {
             "name": "test_infer_clip",
@@ -26,7 +26,7 @@
             "request": "launch",
             "program": "src/eoe/infer/infer_clip.py",
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": false
         }
     ]
 }

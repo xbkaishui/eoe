@@ -12,7 +12,7 @@ from tqdm import tqdm
 from .model import build_model
 from .simple_tokenizer import SimpleTokenizer as _Tokenizer
 
-__all__ = ["available_models", "load", "tokenize"]
+__all__ = ["available_models", "load", "tokenize", "load_state_dict"]
 _tokenizer = _Tokenizer()
 
 _MODELS = {
@@ -69,7 +69,6 @@ def available_models() -> List[str]:
     """Returns the names of available CLIP models"""
     return list(_MODELS.keys())
 
-
 def load(name: str, device: Union[str, torch.device] = "cuda" if torch.cuda.is_available() else "cpu", jit=True):
     """Load a CLIP model
 
@@ -109,6 +108,10 @@ def load(name: str, device: Union[str, torch.device] = "cuda" if torch.cuda.is_a
             warnings.warn(f"File {model_path} is not a JIT archive. Loading as a state dict instead")
             jit = False
         state_dict = torch.load(model_path, map_location="cpu")
+
+    return load_state_dict(state_dict, device, jit)
+
+def load_state_dict(state_dict, device: Union[str, torch.device] = "cuda" if torch.cuda.is_available() else "cpu", jit=True):
 
     if not jit:
         model = build_model(state_dict or model.state_dict()).to(device)
