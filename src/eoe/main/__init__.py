@@ -139,6 +139,10 @@ def default_argsparse(modify_descr: Callable[[str, ], str], modify_parser: Calla
              'logging directory `eoe/data/results/log_YYYYMMDDHHMMSS`. `--superdir` will change this to '
              '`eoe/data/results/SUPERDIR/log_log_YYYYMMDDHHMMSS`, where SUPERDIR is the string given via this argument. '
     )
+    parser.add_argument(
+        '--datapath', type=str, default=".",
+        help='Optional. dataset path. Defaults to the current working directory. '
+    )
     if modify_parser is not None:
         modify_parser(parser)
     args = parser.parse_args()
@@ -288,18 +292,19 @@ def create_trainer(trainer: str, comment: str, dataset: str, oe_dataset: str, ep
     `eoe/data` and creates a logger for the trainer. Returns the created trainer.
     For a description of the parameters have a look at :class:`eoe.training.ad_trainer.ADTrainer`.
     """
-    datapath = pt.abspath(pt.join(__file__, '..', '..', '..', '..', 'data'))
+    datapath = kwargs.pop('data_path', pt.abspath(pt.join(__file__, '..', '..', '..', '..', 'data')))
+    print(f'data path {datapath}')
     kwargs = dict(kwargs)
     superdir = kwargs.pop('superdir', '.')
     continue_run = kwargs.pop('continue_run', None)
 
     if continue_run is None:
-        logger = Logger(pt.join(datapath, 'results', superdir) if logpath is None else logpath, comment)
+        logger = Logger(pt.join(datapath, 'output', superdir) if logpath is None else logpath, comment, noname=True)
     else:
         logger = Logger(continue_run + '---CNTD', noname=True)
 
     trainer = TRAINER[trainer](
-        model, train_transform, val_transform, dataset, oe_dataset, pt.join(datapath, 'datasets'), logger,
+        model, train_transform, val_transform, dataset, oe_dataset, pt.join(datapath, 'dataset'), logger,
         epochs, lr, wdk, milestones, batch_size, ad_mode, torch.device(gpus[0]),
         oe_limit_samples, oe_limit_classes, msm, **kwargs
     )

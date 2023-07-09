@@ -52,11 +52,6 @@ def infer(img_path, model_file):
         
         if img_name in lable_dict:
             raw_label_id = int(lable_dict[img_name])
-        # if jit_probs.tolist()[1] > .62:
-        #     best_idx = 1
-        # else:
-        #     best_idx = 0
-        # glogger.info(jit_probs.tolist())
         probs = {"good": jit_probs.tolist()[0], "bad": jit_probs.tolist()[1]}
         if raw_label_id != best_idx:
             glogger.info("bad infer image {}, predict probs {} predict label {} raw_label {}", img_name, probs, labels[best_idx], raw_label_id)

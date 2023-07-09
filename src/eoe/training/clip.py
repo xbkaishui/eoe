@@ -29,7 +29,10 @@ class ADClipTrainer(ADTrainer):
         assert model is None, 'CLIP-AD always uses the CLIP model'
         assert test_transform is None or len(test_transform.transforms) == 0, "CLIP-AD always uses CLIP's test transform"
         print('Load CLIP model.')
-        model, transform = official_clip.load('ViT-B/32', 'cuda', jit=False)
+        model_name = 'ViT-B/32'
+        # use absolute path to avoid issues with the working directory
+        model_name = '/root/.cache/ckpts/ViT-B-32.pt'
+        model, transform = official_clip.load(model_name, 'cuda', jit=False)
         model.forward = model.encode_image
         if train_transform is not None:
             train_transform.transforms = [
@@ -44,6 +47,7 @@ class ADClipTrainer(ADTrainer):
         else:
             train_transform = transform
         super(ADClipTrainer, self).__init__(None, train_transform, transform, *args, **kwargs)
+        glogger.info("train_transform {}", train_transform)
         self.model = model.to(self.device)
         self.anom_tkn_ptn = anom_tkn_ptn
         glogger.info("anom_tkn_ptn {}", anom_tkn_ptn)

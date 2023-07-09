@@ -11,6 +11,7 @@ from tqdm import tqdm
 
 from .model import build_model
 from .simple_tokenizer import SimpleTokenizer as _Tokenizer
+import traceback
 
 __all__ = ["available_models", "load", "tokenize", "load_state_dict"]
 _tokenizer = _Tokenizer()
@@ -101,8 +102,9 @@ def load(name: str, device: Union[str, torch.device] = "cuda" if torch.cuda.is_a
     try:
         # loading JIT archive
         model = torch.jit.load(model_path, map_location=device if jit else "cpu").eval()
-        state_dict = None
+        return load_state_dict(model.state_dict(), device, jit)
     except RuntimeError:
+        traceback.print_exc()
         # loading saved state dict
         if jit:
             warnings.warn(f"File {model_path} is not a JIT archive. Loading as a state dict instead")
@@ -114,10 +116,12 @@ def load(name: str, device: Union[str, torch.device] = "cuda" if torch.cuda.is_a
 def load_state_dict(state_dict, device: Union[str, torch.device] = "cuda" if torch.cuda.is_available() else "cpu", jit=True):
 
     if not jit:
-        model = build_model(state_dict or model.state_dict()).to(device)
+        model = build_model(state_dict).to(device)
         if str(device) == "cpu":
             model.float()
         return model, _transform(model.visual.input_resolution)
+    else:
+        model = state_dict
 
     # patch the device names
     device_holder = torch.jit.trace(lambda: torch.ones([]).to(torch.device(device)), example_inputs=[])

@@ -12,7 +12,6 @@ if __name__ == '__main__':
             objective='clip',
             dataset='chip',
             oe_dataset='chip',
-            # todo change for test, default is 80
             epochs=epochs,
             learning_rate=2e-5,
             weight_decay=1e-3,
@@ -20,7 +19,9 @@ if __name__ == '__main__':
             batch_size=batch_size,
             devices=[0],
             classes=None,
-            iterations=2,
+            iterations=5,
+            # change data path
+            datapath="/opt/product/test_datas/clip",
         )
     args = default_argsparse(
         lambda s: f"{s} This specific script comes with a default configuration for training CLIP with MNIST.", modify_parser
@@ -41,7 +42,8 @@ if __name__ == '__main__':
     trainer = create_trainer(
         args.objective, args.comment, args.dataset, args.oe_dataset, args.epochs, args.learning_rate, args.weight_decay,
         args.milestones, args.batch_size, args.ad_mode, args.devices, model, train_transform, val_transform,
-        continue_run=continue_run
+        continue_run=continue_run, data_path=args.datapath
     )
-
+    # result dir
+    logger.info("run log dir {}", trainer.logger.dir)
     trainer.run(args.classes, args.iterations, snapshots)

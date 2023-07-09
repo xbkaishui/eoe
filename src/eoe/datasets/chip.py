@@ -27,11 +27,8 @@ class ADCHIP(TorchvisionDataset):
             train_conditional_transform, test_conditional_transform
         )
         glogger.info("self root {}, normal_classes {}, nominal_label {}", root, normal_classes, nominal_label)
-        train_root = os.path.join(root, "chip", "train")
-        test_root = os.path.join(root, "chip", "test")
-        if not os.path.exists(train_root):
-            # fallback to old path
-            train_root = os.path.join(root, "chip")
+        train_root = os.path.join(root, "train")
+        test_root = os.path.join(root, "test")
         if not os.path.exists(test_root):
             test_root = train_root
         glogger.info("train root {} test_root {}", train_root, test_root)
